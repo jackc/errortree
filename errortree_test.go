@@ -65,3 +65,20 @@ func TestNodeAddGetElements(t *testing.T) {
 	errs = tree.Get([]any{7})
 	require.Len(t, errs, 0)
 }
+
+func TestNodeAddNodeMergesErrors(t *testing.T) {
+	tree := &errortree.Node{}
+	tree.Add([]any{"abc"}, errors.New("foo"))
+
+	node := &errortree.Node{}
+	node.Add([]any{}, errors.New("bar"))
+	node.Add([]any{}, errors.New("baz"))
+
+	tree.Add([]any{"abc"}, node)
+
+	errs := tree.Get([]any{"abc"})
+	require.Len(t, errs, 3)
+	require.EqualError(t, errs[0], "foo")
+	require.EqualError(t, errs[1], "bar")
+	require.EqualError(t, errs[2], "baz")
+}

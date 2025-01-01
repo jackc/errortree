@@ -128,7 +128,7 @@ func (n *Node) Add(path []any, err error) {
 	}
 }
 
-func (n *Node) Get(path []any) []error {
+func (n *Node) Get(path ...any) []error {
 	if len(path) == 0 {
 		return n.Errs
 	}
@@ -143,7 +143,7 @@ func (n *Node) Get(path []any) []error {
 		if nextNode == nil {
 			return nil
 		}
-		return nextNode.Get(path[1:])
+		return nextNode.Get(path[1:]...)
 
 	case int:
 		if n.Elements == nil {
@@ -154,7 +154,7 @@ func (n *Node) Get(path []any) []error {
 		if nextNode == nil {
 			return nil
 		}
-		return nextNode.Get(path[1:])
+		return nextNode.Get(path[1:]...)
 
 	default:
 		panic("path elements must be string or int")

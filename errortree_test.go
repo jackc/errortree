@@ -11,12 +11,12 @@ import (
 func TestNodeAddGetSelf(t *testing.T) {
 	tree := &errortree.Node{}
 	tree.Add(nil, errors.New("foo"))
-	errs := tree.Get(nil)
+	errs := tree.Get()
 	require.Len(t, errs, 1)
 	require.EqualError(t, errs[0], "foo")
 
 	tree.Add(nil, errors.New("bar"))
-	errs = tree.Get(nil)
+	errs = tree.Get()
 	require.Len(t, errs, 2)
 	require.EqualError(t, errs[0], "foo")
 	require.EqualError(t, errs[1], "bar")
@@ -25,26 +25,26 @@ func TestNodeAddGetSelf(t *testing.T) {
 func TestNodeAddGetAttributes(t *testing.T) {
 	tree := &errortree.Node{}
 	tree.Add([]any{"name"}, errors.New("foo"))
-	errs := tree.Get([]any{"name"})
+	errs := tree.Get("name")
 	require.Len(t, errs, 1)
 	require.EqualError(t, errs[0], "foo")
 
 	tree.Add([]any{"name"}, errors.New("bar"))
-	errs = tree.Get([]any{"name"})
+	errs = tree.Get("name")
 	require.Len(t, errs, 2)
 	require.EqualError(t, errs[0], "foo")
 	require.EqualError(t, errs[1], "bar")
 
 	tree.Add([]any{"age"}, errors.New("quz"))
-	errs = tree.Get([]any{"age"})
+	errs = tree.Get("age")
 	require.Len(t, errs, 1)
 	require.EqualError(t, errs[0], "quz")
 
-	errs = tree.Get([]any{"nonexistent", "branch"})
+	errs = tree.Get("nonexistent", "branch")
 	require.Len(t, errs, 0)
 
 	tree.Add([]any{"abc", "def", "ghi"}, errors.New("deep error"))
-	errs = tree.Get([]any{"abc", "def", "ghi"})
+	errs = tree.Get("abc", "def", "ghi")
 	require.Len(t, errs, 1)
 	require.EqualError(t, errs[0], "deep error")
 }
@@ -52,17 +52,17 @@ func TestNodeAddGetAttributes(t *testing.T) {
 func TestNodeAddGetElements(t *testing.T) {
 	tree := &errortree.Node{}
 	tree.Add([]any{13}, errors.New("foo"))
-	errs := tree.Get([]any{13})
+	errs := tree.Get(13)
 	require.Len(t, errs, 1)
 	require.EqualError(t, errs[0], "foo")
 
 	tree.Add([]any{13}, errors.New("bar"))
-	errs = tree.Get([]any{13})
+	errs = tree.Get(13)
 	require.Len(t, errs, 2)
 	require.EqualError(t, errs[0], "foo")
 	require.EqualError(t, errs[1], "bar")
 
-	errs = tree.Get([]any{7})
+	errs = tree.Get(7)
 	require.Len(t, errs, 0)
 }
 
@@ -76,7 +76,7 @@ func TestNodeAddNodeMergesErrors(t *testing.T) {
 
 	tree.Add([]any{"abc"}, node)
 
-	errs := tree.Get([]any{"abc"})
+	errs := tree.Get("abc")
 	require.Len(t, errs, 3)
 	require.EqualError(t, errs[0], "foo")
 	require.EqualError(t, errs[1], "bar")
